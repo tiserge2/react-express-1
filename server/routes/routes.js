@@ -3,7 +3,8 @@ const VisitSchema   = require('../models/visit.model')
 
 module.exports = (app) => {
     app.get('/', (req, res) => {
-        res.sendFile(path.join(__dirname + 'client/build/index.html'))
+        // console.log("parent: ", path.resolve(__dirname, "../.."))
+        res.sendFile(path.join(path.resolve(__dirname, "../..") + '/client/build/index.html'))
     })
 
     app.get('/api/getVisitList', (req, res) => {

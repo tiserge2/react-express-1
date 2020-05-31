@@ -7,10 +7,16 @@ const app           = express();
 const configDB      = require('./config/database')
 
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+console.log("parent: ", path.resolve(__dirname, ".."))
+
+app.use(express.static(path.join(path.resolve(__dirname, ".."), 'client/build')));
+
+app.use(express.static(__dirname));
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
+
 
 // parse application/json
 app.use(bodyParser.json())
