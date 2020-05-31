@@ -1,38 +1,71 @@
 import React from 'react';
-import logo from './logo.svg';
+import {isFirstTime} from './utils/visitor.js'
 import './App.css';
 
 class  App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      list: []
+      visit: []
     }
   }
 
   componentDidMount = () => {
     this.fetchData();
+    if(isFirstTime()) {
+      console.log("Send +1 visit to server")
+      this.updateVisit()
+    } else {
+      console.log("Dont send +1 visit to server")
+    }
+  }
+
+  updateVisit = () => {
+    fetch('/api/addVisit', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ 
+        websiteId: "5ed2ed637c213e044cc03312"
+      })
+    })
   }
 
   fetchData = () => {
-    fetch('/api/getList')
+    fetch('/api/getVisitList')
     .then(res => res.json())
-    .then(list => this.setState({list}))
+    .then(list => {
+      this.setState({visit: list})
+      console.log("showing: ", list)
+    })
   }
 
   render() {
+    console.log('showing state ',this.state.visit)
     return (
       <div className="App">
-        <h1>List of items</h1>
-        <ul>
+        <h1>Number of visit</h1>
+        <h4>
+          This is a simple app to show the number of visit from each of my deployed app.
+        </h4>
+        <p id="footer">
+          Coded by <a href="https://github.com/tiserge2" rel="noopener noreferrer" target="_blank">Osson Sergio Suzerain</a>
+        </p>
+        <div id="container">
           {
-            this.state.list.map((item) => {
+            this.state.visit.map((site, index) => {
+              let visit = site.visit > 0 ? site.visit : "0"
               return(
-                <li>{item}</li>
+                <div id="visit-container" key={index}>
+                  <p id="visit-counter">{visit}</p>
+                  <a href={site.website} rel="noopener noreferrer" target="_blank" id="website-url">{site.name}</a>
+                </div>
               )
             })
           }
-        </ul>
+        </div>
       </div>
     );
   }
