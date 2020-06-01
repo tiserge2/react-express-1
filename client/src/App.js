@@ -9,7 +9,7 @@ class  App extends React.Component {
     super(props);
     this.state = {
       visit: [],
-      endpoint: 'https://tiserge2-visit.herokuapp.com/'
+      endpoint: 'localhost:5000'
     }
     socket = socketIOClient(this.state.endpoint)
   }
