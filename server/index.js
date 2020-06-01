@@ -1,10 +1,14 @@
 const express       = require('express');
-const path          = require('path');
+const path          = require('path'); 
+const http          = require('http');
+const socketIO      = require('socket.io');
 const mongoose      = require('mongoose');
 const bodyParser    = require('body-parser');
 
 const app           = express();
 const configDB      = require('./config/database')
+const VisitSchema   = require('./models/visit.model')
+
 
 // Serve the static files from the React app
 console.log("parent: ", path.resolve(__dirname, ".."))
@@ -36,7 +40,36 @@ const db = mongoose.connection;
 require('./routes/routes.js')(app)
 
 
-const port = process.env.PORT || 5000;
-app.listen(port);
+const server = http.createServer(app)
+const io     = socketIO(server)
 
-console.log('App is listening on port ' + port);
+let interval;
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 1000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    clearInterval(interval);
+  });
+});
+
+const getApiAndEmit = socket => {
+  const response = new Date();
+  // Emitting a new message. Will be consumed by the client
+  VisitSchema.find({}, (err, visits) => {
+      if(err) {
+          console.log(err)
+      } else {
+        socket.emit("FromAPI", visits);
+      }
+  })
+};
+
+const port = process.env.PORT || 5000;
+
+server.listen(port, () => console.log('App is listening on port ' + port));
+

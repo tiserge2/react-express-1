@@ -1,13 +1,17 @@
-import React from 'react';
+import React from 'react'
+import socketIOClient from 'socket.io-client'
 import {isFirstTime} from './utils/visitor.js'
-import './App.css';
+import './App.css'
 
+let socket 
 class  App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visit: []
+      visit: [],
+      endpoint: 'localhost:5000'
     }
+    socket = socketIOClient(this.state.endpoint)
   }
 
   componentDidMount = () => {
@@ -18,6 +22,10 @@ class  App extends React.Component {
     } else {
       console.log("Dont send +1 visit to server")
     }
+
+    socket.on('FromAPI', visits => {
+      this.setState({ visit: visits})
+    })
   }
 
   updateVisit = () => {
