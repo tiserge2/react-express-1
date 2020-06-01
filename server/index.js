@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
 
 const getApiAndEmit = socket => {
   const response = new Date();
+  console.log("Still connected: ", response)
   // Emitting a new message. Will be consumed by the client
   VisitSchema.find({}, (err, visits) => {
       if(err) {
